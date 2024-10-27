@@ -1,5 +1,5 @@
 use futures_util::StreamExt;
-use kube::api::Api;
+use kube::api::{Api, Patch, PatchParams};
 use kube::runtime::controller::{self, Action};
 use kube::runtime::finalizer;
 use kube::runtime::finalizer::Event;
@@ -7,7 +7,7 @@ use kube::runtime::reflector::ObjectRef;
 use kube::runtime::watcher;
 use kube::runtime::Controller;
 use kube::{Client, ResourceExt};
-use sample_custom_controller::Sample;
+use sample_custom_controller::{ResourceStatus, Sample, SampleStatus};
 use std::error::Error;
 use std::sync::Arc;
 use std::time::Duration;
@@ -38,16 +38,28 @@ async fn reconcile(resource: Arc<Sample>, context: Arc<Context>) -> kube::Result
         &samples,
         "sample-custom-controller/v1alpha1",
         resource,
-        reconcile_resource,
+        |event| reconcile_resource(event, context),
     )
     .await
     .map_err(on_error_finalizer)
 }
 
-async fn reconcile_resource(event: Event<Sample>) -> kube::Result<Action> {
+async fn reconcile_resource(event: Event<Sample>, context: Arc<Context>) -> kube::Result<Action> {
     match event {
         Event::Apply(resource) => {
             log::info!("Apply {}", resource.name_any());
+            let namespace = resource.namespace().unwrap();
+            let samples: Api<Sample> = Api::namespaced(context.client.clone(), &namespace);
+            let patch = Patch::Merge(ResourceStatus {
+                status: SampleStatus { check: true },
+            });
+            samples
+                .patch_status(
+                    resource.name_any().as_str(),
+                    &PatchParams::default(),
+                    &patch,
+                )
+                .await?;
         }
         Event::Cleanup(resource) => {
             log::info!("Cleanup {}", resource.name_any());

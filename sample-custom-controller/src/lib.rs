@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 )]
 #[kube(status = "SampleStatus")]
 pub struct SampleSpec {
-    name: String,
+    pub name: String,
 }
 
 // -----------------------------------------------------------------------------------------------
@@ -19,5 +19,13 @@ pub struct SampleSpec {
 #[derive(Clone, Debug, Deserialize, JsonSchema, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SampleStatus {
-    check: bool,
+    pub check: bool,
+}
+
+// -----------------------------------------------------------------------------------------------
+
+#[derive(Clone, Debug, Deserialize, JsonSchema, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ResourceStatus<T> {
+    pub status: T,
 }

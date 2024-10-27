@@ -45,6 +45,7 @@ rules:
   - sample.custom-controller
   resources:
   - samples
+  - samples/status
   verbs:
   - get
   - list
