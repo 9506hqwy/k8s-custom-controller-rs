@@ -46,7 +46,9 @@ rules:
   resources:
   - samples
   verbs:
+  - get
   - list
+  - patch
   - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
