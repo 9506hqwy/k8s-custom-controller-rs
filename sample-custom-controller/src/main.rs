@@ -1,11 +1,11 @@
 use futures_util::StreamExt;
 use kube::api::{Api, Patch, PatchParams};
+use kube::runtime::Controller;
 use kube::runtime::controller::{self, Action};
 use kube::runtime::finalizer;
 use kube::runtime::finalizer::Event;
 use kube::runtime::reflector::ObjectRef;
 use kube::runtime::watcher;
-use kube::runtime::Controller;
 use kube::{Client, ResourceExt};
 use sample_custom_controller::{ResourceStatus, Sample, SampleStatus};
 use std::error::Error;
