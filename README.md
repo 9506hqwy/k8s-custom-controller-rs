@@ -5,7 +5,7 @@
 Build container image.
 
 ```sh
-buildah bud --format=docker -t <Custom Controller Image Path> -f sample-custom-controller/Dockerfile .
+buildah bud -t <Custom Controller Image Path> -f sample-custom-controller/Dockerfile .
 ```
 
 Push container image.
